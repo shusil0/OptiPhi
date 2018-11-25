@@ -220,7 +220,6 @@ int signalToText()
 				}
 				sleep(catch_up_delay);
 				break;
-				
 
 			case ERROR_CHECK:
 				reading = singalReading(signal_reading_time, num_readings);
@@ -246,7 +245,6 @@ int signalToText()
   				mystate = START; // treat next sequence as a new start to determine if its IDLE or NEW_CHAR state
 				sleep(catch_up_delay);
 				break;
-
 		}
 	}
 	return error_output;
