@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <chrono>
 #include <thread>
+#include "../Utilities/Utilities.cpp"
 using namespace std;
 
 enum State { START, IDLE_ZERO, IDLE_ONE, NEW_CHAR_ZERO, NEW_CHAR_ONE, COUNT_ZERO, COUNT_ONE, COUNT_DONE, COUNT_TRANSITION, ERROR_CHECK};
@@ -228,17 +229,18 @@ int signalToText()
 				if(reading == 0)
 				{
 					data[i] = 0;
-					i = 0;
 				}
 				else if(reading == 1)
 				{
 					data[i] = 1;
-					i = 0;
 				}
+				i = 0;
 				new_char_one_count = 0;
 				new_char_zero_count = 0;
 
-				//save data tos file
+				char_output = convertToChar(data);
+				// write to file
+
 				delete[] data;
   				data = nullptr;
   				data = new(std::nothrow) int[data_lenght]; // clear data array

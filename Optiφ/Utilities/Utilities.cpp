@@ -58,7 +58,7 @@ int convertToAsciiNum(int data[]){
     return 0;
 }
 
-char conVertToChar(int data[]){
+char convertToChar(int data[]){
     int asciiNum = convertToAsciiNum(data);
     // Check what if asciiNum is less than 0, this means invalid
     char ascii = asciiNum;
