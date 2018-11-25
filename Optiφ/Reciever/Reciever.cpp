@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <chrono>
 #include <thread>
+#include "../Utilities/Utilities.cpp"
 using namespace std;
 
 enum State { START, IDLE_ZERO, IDLE_ONE, NEW_CHAR_ZERO, NEW_CHAR_ONE, COUNT_ZERO, COUNT_ONE, COUNT_DONE, COUNT_TRANSITION, ERROR_CHECK};
@@ -19,7 +20,6 @@ int singalReading(int max_time, int num_readings)
 	int total_time = 0;
 	float average = 0;
 	int delay = (max_time/num_readings) + 1;
-	int i = 0;
 	int pin_state;
 
 	while(total_time < max_time)
@@ -29,7 +29,6 @@ int singalReading(int max_time, int num_readings)
 		total_time+= delay;
 
 		sleep(delay);
-		++i;
 	}
 	average = average/(num_readings*1.0);
 	return round(average);
@@ -38,17 +37,17 @@ int singalReading(int max_time, int num_readings)
 int signalToText()
 {
 	int error_output = 0;
-	int data_lenght;
-	data_lenght = 8;
+	int data_length;
+	data_length = 8;
 
-	int* data = new(std::nothrow) int[data_lenght]; // array to store the characters in binary
+	int* data = new(std::nothrow) int[data_length]; // array to store the characters in binary
 													// also stores error check associated with each character
-	char* char_output; // stores characters to be writen to file
+	char char_output; // stores character to be writen to file
 	
 	State mystate = START;
 	int i = 0;
 	int temp = 0; // temp that will store a zero or one that represents a bit
-	int reading;
+	int reading; // stores the reading from the photodiode
 	int new_char_zero_count = 0; // count for number of zero singals in the NEW_CHAR state
 	int new_char_one_count = 0; // count for number of one singals in the NEW_CHAR state
 	int count_zero_count = 0; // count for number of zero singals in the COUNT state
@@ -195,13 +194,13 @@ int signalToText()
 			case COUNT_DONE:
 				data[i] = temp;
 				++i;
-				if(i > 7)
+				if(i > 6)
 				{
 					mystate = ERROR_CHECK;
 				}
 				else
 				{
-					COUNT_TRANSITION;
+					mystate = COUNT_TRANSITION;
 				}
 				count_zero_count = 0;
 				count_one_count = 0;
@@ -221,32 +220,31 @@ int signalToText()
 				}
 				sleep(catch_up_delay);
 				break;
-				
 
 			case ERROR_CHECK:
 				reading = singalReading(signal_reading_time, num_readings);
 				if(reading == 0)
 				{
 					data[i] = 0;
-					i = 0;
 				}
 				else if(reading == 1)
 				{
 					data[i] = 1;
-					i = 0;
 				}
+				i = 0;
 				new_char_one_count = 0;
 				new_char_zero_count = 0;
 
-				//save data tos file
+				char_output = convertToChar(data);
+				cout << char_output;
+
 				delete[] data;
   				data = nullptr;
-  				data = new(std::nothrow) int[data_lenght]; // clear data array
+  				data = new(std::nothrow) int[data_length]; // clear data array
 
   				mystate = START; // treat next sequence as a new start to determine if its IDLE or NEW_CHAR state
 				sleep(catch_up_delay);
 				break;
-
 		}
 	}
 	return error_output;
