@@ -34,6 +34,8 @@ int singalReading(int max_time, int num_readings)
 	return round(average);
 }
 
+int test [90] = {0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1};
+
 int signalToText()
 {
 	int error_output = 0;
@@ -46,6 +48,7 @@ int signalToText()
 	
 	State mystate = START;
 	int i = 0;
+	int n = 0;
 	int temp = 0; // temp that will store a zero or one that represents a bit
 	int reading; // stores the reading from the photodiode
 	int new_char_zero_count = 0; // count for number of zero singals in the NEW_CHAR state
@@ -60,53 +63,55 @@ int signalToText()
 	int new_char_zero_termination = 3;
 	int new_char_one_termination = 3;
 
-	while(1)
+	while(error_output == 0)
 	{
 		switch(mystate)
 		{
 			case START:
-				reading = singalReading(signal_reading_time, num_readings); // test signal values for 750ms
+				reading = test[n]; 
+				//reading = singalReading(signal_reading_time, num_readings); // test signal values for 750ms
 				if(reading == 0)
 				{
-					mystate = IDLE_ZERO;
+					mystate = NEW_CHAR_ZERO;
 				}
 				else if(reading == 1)
 				{
-					mystate = IDLE_ONE;
+					mystate = NEW_CHAR_ONE;
 				}
-				sleep(catch_up_delay); // wait for 250ms so the reviever system is in sync with sender system
+				//sleep(catch_up_delay); // wait for 250ms so the reviever system is in sync with sender system
 									   // assuming singals are coming at 1000ms intervals
 				break;
 
-			case IDLE_ZERO:
-				reading = singalReading(signal_reading_time, num_readings);
-				if(reading == 1)
-				{
-					mystate = IDLE_ONE;
-				}
-				else if(reading == 0)
-				{
-					mystate = NEW_CHAR_ZERO;
-					new_char_zero_count = 2; // count is 2 since IDLE got a zero reading before as well
-				}
-				sleep(catch_up_delay);
-				break;
+			// case IDLE_ZERO:
+			// 	reading = singalReading(signal_reading_time, num_readings);
+			// 	if(reading == 1)
+			// 	{
+			// 		mystate = IDLE_ONE;
+			// 	}
+			// 	else if(reading == 0)
+			// 	{
+			// 		mystate = NEW_CHAR_ZERO;
+			// 		new_char_zero_count = 2; // count is 2 since IDLE got a zero reading before as well
+			// 	}
+			// 	sleep(catch_up_delay);
+			// 	break;
 
-			case IDLE_ONE:
-				reading = singalReading(signal_reading_time, num_readings);
-				if(reading == 0)
-				{
-					mystate = IDLE_ZERO;
-				}
-				else if(reading == 1)
-				{
-					mystate = IDLE_ZERO; // ignore the error
-				}
-				sleep(catch_up_delay);
-				break;
+			// case IDLE_ONE:
+			// 	reading = singalReading(signal_reading_time, num_readings);
+			// 	if(reading == 0)
+			// 	{
+			// 		mystate = IDLE_ZERO;
+			// 	}
+			// 	else if(reading == 1)
+			// 	{
+			// 		mystate = IDLE_ZERO; // ignore the error
+			// 	}
+			// 	sleep(catch_up_delay);
+			// 	break;
 
 			case NEW_CHAR_ZERO:
-				reading = singalReading(signal_reading_time, num_readings);
+				reading = test[n]; 
+				//reading = singalReading(signal_reading_time, num_readings);
 				if(reading == 0)
 				{
 					++new_char_zero_count;
@@ -124,11 +129,12 @@ int signalToText()
 						mystate = NEW_CHAR_ZERO; // assume hyteresis
 					}
 				}
-				sleep(catch_up_delay);
+				//sleep(catch_up_delay);
 				break;
 
 			case NEW_CHAR_ONE:
-				reading = singalReading(signal_reading_time, num_readings);
+				reading = test[n]; 
+				//reading = singalReading(signal_reading_time, num_readings);
 				if(reading == 1)
 				{
 					++new_char_one_count;
@@ -144,17 +150,26 @@ int signalToText()
 					}
 					else
 					{
-						mystate = NEW_CHAR_ONE; // assume hyteresis
+						mystate = NEW_CHAR_ZERO; // assume hyteresis
+						--new_char_one_count;
 					}
 				}
-				sleep(catch_up_delay);
+				//sleep(catch_up_delay);
 				break;
 
 			case COUNT_ZERO:
-				reading = singalReading(signal_reading_time, num_readings);
+				reading = test[n]; 
+				//reading = singalReading(signal_reading_time, num_readings);
 				if(reading == 0)
 				{
 					++count_zero_count;
+					if(count_zero_count > 2)
+					{
+						mystate = NEW_CHAR_ZERO;
+						count_zero_count = 0;
+						count_one_count = 0;
+						new_char_one_count = 0;
+					}
 				}
 				else if(reading == 1)
 				{
@@ -164,16 +179,24 @@ int signalToText()
 						mystate = COUNT_DONE;
 						temp = 0;
 					}
-					else // if the sequence is {0,1}
+					else if(count_zero_count == 1) // if the sequence is {0,1}
 					{
 						mystate = COUNT_ONE;
 					}
+					else
+					{
+						mystate = NEW_CHAR_ZERO;
+						count_zero_count = 0;
+						count_one_count = 0;
+						new_char_one_count = 0;
+					}
 				}
-				sleep(catch_up_delay);
+				//sleep(catch_up_delay);
 				break;
 
 			case COUNT_ONE:
-				reading = singalReading(signal_reading_time, num_readings);
+				reading = test[n]; 
+				//reading = singalReading(signal_reading_time, num_readings);
 				if(reading == 1 || reading == 0) // assume the zero reading is an error
 				{
 					++count_one_count;
@@ -187,14 +210,15 @@ int signalToText()
 						mystate = COUNT_ONE;
 					}
 				}
-				sleep(catch_up_delay);
+				//sleep(catch_up_delay);
 				break;
 
 
 			case COUNT_DONE:
+				--n;
 				data[i] = temp;
 				++i;
-				if(i > 6)
+				if(i > 7)
 				{
 					mystate = ERROR_CHECK;
 				}
@@ -207,7 +231,8 @@ int signalToText()
 				break;
 
 			case COUNT_TRANSITION:
-				reading = singalReading(signal_reading_time, num_readings);
+				reading = test[n];
+				//reading = singalReading(signal_reading_time, num_readings);
 				if(reading == 0)
 				{
 					++count_zero_count;
@@ -218,19 +243,11 @@ int signalToText()
 					++count_one_count;
 					mystate = COUNT_ONE;
 				}
-				sleep(catch_up_delay);
+				//sleep(catch_up_delay);
 				break;
 
 			case ERROR_CHECK:
-				reading = singalReading(signal_reading_time, num_readings);
-				if(reading == 0)
-				{
-					data[i] = 0;
-				}
-				else if(reading == 1)
-				{
-					data[i] = 1;
-				}
+				--n;
 				i = 0;
 				new_char_one_count = 0;
 				new_char_zero_count = 0;
@@ -242,10 +259,11 @@ int signalToText()
   				data = nullptr;
   				data = new(std::nothrow) int[data_length]; // clear data array
 
-  				mystate = START; // treat next sequence as a new start to determine if its IDLE or NEW_CHAR state
-				sleep(catch_up_delay);
+  				mystate = START; // treat next sequence as a new start to reset
+				//sleep(catch_up_delay);
 				break;
 		}
 	}
+	
 	return error_output;
 }
