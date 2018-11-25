@@ -4,7 +4,16 @@
 #include <stdio.h>
 #include <cmath>
 
-const int length = 8;
+
+const int NEW_CHAR_SEQUENCE_LENGTH = 6;
+const int NEW_CHAR_SEQUENCE [NEW_CHAR_SEQUENCE_LENGTH] = { 0, 0, 0, 1, 1, 1}; 
+
+const int CHARACTER_LENGTH = 8;
+
+const int BIT_SEQUENCE_LENGTH = 3;
+
+const int ON_SEQUENCE [BIT_SEQUENCE_LENGTH] = { 0, 1, 1}; 
+const int OFF_SEQUENCE [BIT_SEQUENCE_LENGTH] = { 0, 0, 1}; 
 
 using namespace std;
 
@@ -13,7 +22,7 @@ int totalNumberOfOnes(int data[]){
     // Check if the data array has length < 8
     
     int totalNumberOfOnes = 0;                              // total number of Ones
-    for(int i = 0; i < length-1; i++){
+    for(int i = 0; i < CHARACTER_LENGTH-1; i++){
         if(data[i] == 1){
             totalNumberOfOnes = totalNumberOfOnes + 1;
         }
@@ -23,9 +32,9 @@ int totalNumberOfOnes(int data[]){
 
 bool isValid(int data[]){
     
-    if(totalNumberOfOnes(data) % 2 == 0 && data[length-1] == 1){         // If there are even number of ones and last digit is 1
+    if(totalNumberOfOnes(data) % 2 == 0 && data[CHARACTER_LENGTH-1] == 1){         // If there are even number of ones and last digit is 1
         return true;
-    }else if(totalNumberOfOnes(data) % 2 == 1 && data[length-1] == 0){  // If there are odd number of ones and last digit is 0
+    }else if(totalNumberOfOnes(data) % 2 == 1 && data[CHARACTER_LENGTH-1] == 0){  // If there are odd number of ones and last digit is 0
         return true;
     }else{
         return false;
@@ -38,7 +47,7 @@ int convertToAsciiNum(int data[]){
     
     if(isValid(data)){                                    // If the added 1s matches with the last digit in the array
         
-        int validLength = 7;
+        int validLength = CHARACTER_LENGTH-1;
         int power[validLength];                       // the value starts at 2^7 and and goes till 2^0
         for(int i = 0; i < validLength; i++)
         {
@@ -58,7 +67,7 @@ int convertToAsciiNum(int data[]){
     return 0;
 }
 
-char conVertToChar(int data[]){
+char convertToChar(int data[]){
     int asciiNum = convertToAsciiNum(data);
     // Check what if asciiNum is less than 0, this means invalid
     char ascii = asciiNum;
@@ -80,10 +89,10 @@ bool isValid(char str){
     return true;
 }
 
-int* convertToBinaryArray(int binaryArray[], char str){
+int* convertToBinaryArray(char str){
     int input = (int) str;
-    int lengthOfArray = 8;
-    binaryArray =  new int[lengthOfArray];
+    int lengthOfArray = CHARACTER_LENGTH;
+    int* binaryArray =  new int[lengthOfArray];
     
     for(int i = lengthOfArray-2; i >= 0; i--){
         binaryArray[i] = input % 2;
@@ -96,9 +105,6 @@ int* convertToBinaryArray(int binaryArray[], char str){
         binaryArray[lengthOfArray-1] = 1;
     }
     
-    for(int j = 0; j < 8; j++){
-        cout << binaryArray[j] << ", " << flush;
-    }
     return binaryArray;
     
 }

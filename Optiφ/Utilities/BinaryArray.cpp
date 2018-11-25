@@ -9,6 +9,7 @@ using namespace std;
 
 int inValidEntry = -1; //In that is to be returned if an invalid entry is accessed
 BinaryArray BinaryArray::inValidBinaryArray(new int[0], -1); //Invald data array, returned when functions that return a data array fail
+BinaryArray BinaryArray::newCharArray(NEW_CHAR_SEQUENCE, NEW_CHAR_SEQUENCE_LENGTH); //Invald data array, returned when functions that return a data array fail
 
 //Returns length of data array
 int BinaryArray::getLength(){
@@ -22,6 +23,7 @@ int* BinaryArray::getData(){
 bool BinaryArray::isValid(){
     return _length > 0;
 }
+
 
 /*
 *Operator:()
@@ -67,6 +69,17 @@ BinaryArray BinaryArray::operator + (const BinaryArray & arr) const {
 }
 void BinaryArray::operator += (const BinaryArray & arr)  {
     *this = *this + arr;
+}
+BinaryArray BinaryArray::operator + (const  bool b) const {
+  BinaryArray temp( * this);//Create 
+  if(b)
+    temp+= BinaryArray(ON_SEQUENCE, BIT_SEQUENCE_LENGTH);
+  else
+    temp += BinaryArray(OFF_SEQUENCE, BIT_SEQUENCE_LENGTH);
+  return temp;
+}
+void BinaryArray::operator += (const bool b)  {
+    *this = *this + b;
 }
 /*
 *Operator:=
@@ -124,7 +137,7 @@ BinaryArray::BinaryArray(const int* data,const int length) {
     _data = new(std::nothrow) int[length]; 
     for(int i = 0; i < length; i++){
         _data[i] = !!data[i];
-        cout<<"i: "<<i<<", "<<_data[i]<<endl;
+       // cout<<"i: "<<i<<", "<<_data[i]<<endl;
     }
 }
 BinaryArray::~BinaryArray(){
@@ -145,6 +158,7 @@ std::ostream& operator<<(std::ostream& os, BinaryArray& a) {
     if (i < (a.getLength() - 1))
       os << ", ";
   }
-  os << "]";
+  os << "] Length: ";
+  os << a.getLength();
   return os;
 }
