@@ -49,13 +49,13 @@ bool turnOnOrOff(BinaryArray array, uint32_t* gpio, int LASER){
         
         if(array.getData[i] == 1){
             
-            GPIO++.turnOn(gpio, LASER);
-            GPIO++.delay(array.getTime);
+            turnOn(gpio, LASER);
+            delay(array.getTime);
             
         }else if(array.getData[i] == 0){
             
-            GPIO++.turnOff(gpio, LASER);
-            GPIO++.delay(array.getTime);
+            turnOff(gpio, LASER);
+            delay();
             
         }else{
             cout << "NOT BINARY " << end;

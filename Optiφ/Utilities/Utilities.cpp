@@ -15,7 +15,14 @@ const int BIT_SEQUENCE_LENGTH = 3;
 const int ON_SEQUENCE [BIT_SEQUENCE_LENGTH] = { 0, 1, 1}; 
 const int OFF_SEQUENCE [BIT_SEQUENCE_LENGTH] = { 0, 0, 1}; 
 
+const int DELAY_MICRO = 1000;
+
 using namespace std;
+
+void sleep(int delay)
+{
+	std::this_thread::sleep_for(std::chrono::microseconds(delay)); // length of time to sleep, in miliseconds
+}
 
 int totalNumberOfOnes(int data[]){
     

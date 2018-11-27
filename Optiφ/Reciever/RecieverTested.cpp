@@ -9,26 +9,22 @@
 #include "../Utilities/GPIO++.c"
 using namespace std;
 
+const int INPUT_PIN = 17;
 
 enum State { START, NEW_CHAR_ZERO, NEW_CHAR_ONE, COUNT_ZERO, COUNT_ONE, COUNT_DONE, COUNT_TRANSITION, ERROR_CHECK};
 
-void sleep(int delay)
+int singalReading(uint32_t* gpio)
 {
-	std::this_thread::sleep_for(std::chrono::microseconds(delay)); // length of time to sleep, in miliseconds
-}
-
-int singalReading()
-{
-	int pin_state;
-
-	pin_state = 1; //Ansar code needed
-
-	return pin_state;
+	return getPinState(gpio, INPUT_PIN);
 }
 
 //int test [90] = {0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1};
 int main()
 {
+
+	GPIO_Handle gpio;
+	gpio = gpiolib_init_gpio();
+	setAsInput(gpio, INPUT_PIN);
 	int error_output = 0;
 	int data_length = 8;
 
@@ -45,7 +41,7 @@ int main()
 	int count_zero_count = 0; // count for number of zero singals in the COUNT state
 	int count_one_count = 0; // count for number of one singals in the COUNT state
 
-	int catch_up_delay = 1000;
+	int catch_up_delay = DELAY_MICRO;
 
 	int new_char_zero_termination = 3;
 	int new_char_one_termination = 3;
@@ -58,7 +54,7 @@ int main()
 			case START:
 				sleep(catch_up_delay/2); // wait for 500ms so the reviever system is in sync with sender system
 										   // assuming singals are coming at 1000ms intervals				
-				reading = singalReading(); // test signal values for 750ms
+				reading = singalReading(gpio); // test signal values for 750ms
 				if(reading == 0)
 				{
 					mystate = NEW_CHAR_ZERO;
@@ -74,7 +70,7 @@ int main()
 
 			case NEW_CHAR_ZERO:			
 				sleep(catch_up_delay/2); 
-				reading = singalReading();
+				reading = singalReading(gpio);
 				if(reading == 0)
 				{
 					++new_char_zero_count;
@@ -97,7 +93,7 @@ int main()
 
 			case NEW_CHAR_ONE:				 
 				sleep(catch_up_delay/2);
-				reading = singalReading();
+				reading = singalReading(gpio);
 				if(reading == 1)
 				{
 					++new_char_one_count;
@@ -122,7 +118,7 @@ int main()
 
 			case COUNT_ZERO:			
 				sleep(catch_up_delay/2); 
-				reading = singalReading();
+				reading = singalReading(gpio);
 				if(reading == 0)
 				{
 					++count_zero_count;
@@ -159,7 +155,7 @@ int main()
 
 			case COUNT_ONE:				
 				sleep(catch_up_delay/2); 
-				reading = singalReading();
+				reading = singalReading(gpio);
 				if(reading == 1 || reading == 0) // assume the zero reading is an error
 				{
 					++count_one_count;
@@ -196,7 +192,7 @@ int main()
 
 			case COUNT_TRANSITION:
 				sleep(catch_up_delay/2);	
-				reading = singalReading();
+				reading = singalReading(gpio);
 				if(reading == 0)
 				{
 					++count_zero_count;
