@@ -5,27 +5,10 @@
 #include <stdio.h>
 #include <chrono>
 #include <thread>
-#include "Utilities2.cpp"
+#include "../Utilities/Utilities.cpp"
+#include "../Utilities/GPIO++.c"
 using namespace std;
 
-/*
-	Whats happening here:
-	1) it works with declared array 'test'
-	2) it is not set up to work with photodiodes
-		a) my functions for photodiode use are done but not tested 
-			i) sleep
-			ii) signalReading
-		b) no gpio done
-		c) no write to config done
-			i) cout is what i used
-		d) time of loops is not accounted for (oof)
-		e) should be idle waiting for signal when nothing is sent
-		f) error cases are kinda FUCKED
-			i) i added some, but did not cover many instances.
-			   its hard to decide whether to reset the system
-			   or continue and treat error as hysterisis.
-	    g) endl; need to be accounted for and can be done during idle
-*/
 
 enum State { START, NEW_CHAR_ZERO, NEW_CHAR_ONE, COUNT_ZERO, COUNT_ONE, COUNT_DONE, COUNT_TRANSITION, ERROR_CHECK};
 
@@ -43,8 +26,7 @@ int singalReading()
 	return pin_state;
 }
 
-int test [90] = {0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1};
-//int test2 [30] = {0,0,0,1,1,1,0,1,1,0,1,1,0,0,1,0,1,1,0,0,1,0,0,1,0,0,1,0,0,1};
+//int test [90] = {0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1};
 int main()
 {
 	int error_output = 0;
@@ -56,7 +38,6 @@ int main()
 	
 	State mystate = START;
 	int i = 0;
-	int n = 0;
 	int temp = 0; // temp that will store a zero or one that represents a bit
 	int reading; // stores the reading from the photodiode
 	int new_char_zero_count = 0; // count for number of zero singals in the NEW_CHAR state
@@ -70,15 +51,14 @@ int main()
 	int new_char_one_termination = 3;
 
 
-	while(error_output == 0 && n <= 90)
+	while(error_output == 0)
 	{
 		switch(mystate)
 		{
 			case START:
-				//sleep(catch_up_delay/2); // wait for 500ms so the reviever system is in sync with sender system
-										   // assuming singals are coming at 1000ms intervals
-				reading = test[n];
-				//reading = singalReading(); // test signal values for 750ms
+				sleep(catch_up_delay/2); // wait for 500ms so the reviever system is in sync with sender system
+										   // assuming singals are coming at 1000ms intervals				
+				reading = singalReading(); // test signal values for 750ms
 				if(reading == 0)
 				{
 					mystate = NEW_CHAR_ZERO;
@@ -89,13 +69,12 @@ int main()
 					mystate = NEW_CHAR_ONE;
 					++new_char_one_count;
 				}
-				//sleep(catch_up_delay/2);
+				sleep(catch_up_delay/2);
 				break;
 
-			case NEW_CHAR_ZERO:
-				reading = test[n];
-				//sleep(catch_up_delay/2); 
-				//reading = singalReading();
+			case NEW_CHAR_ZERO:			
+				sleep(catch_up_delay/2); 
+				reading = singalReading();
 				if(reading == 0)
 				{
 					++new_char_zero_count;
@@ -113,13 +92,12 @@ int main()
 						mystate = NEW_CHAR_ZERO; // assume hyteresis
 					}
 				}
-				//sleep(catch_up_delay/2);
+				sleep(catch_up_delay/2);
 				break;
 
-			case NEW_CHAR_ONE:
-				reading = test[n]; 
-				//sleep(catch_up_delay/2);
-				//reading = singalReading();
+			case NEW_CHAR_ONE:				 
+				sleep(catch_up_delay/2);
+				reading = singalReading();
 				if(reading == 1)
 				{
 					++new_char_one_count;
@@ -139,13 +117,12 @@ int main()
 						--new_char_one_count;
 					}
 				}
-				//sleep(catch_up_delay/2);
+				sleep(catch_up_delay/2);
 				break;
 
-			case COUNT_ZERO:
-				reading = test[n];
-				//sleep(catch_up_delay/2); 
-				//reading = singalReading();
+			case COUNT_ZERO:			
+				sleep(catch_up_delay/2); 
+				reading = singalReading();
 				if(reading == 0)
 				{
 					++count_zero_count;
@@ -177,13 +154,12 @@ int main()
 						new_char_one_count = 0;
 					}
 				}
-				//sleep(catch_up_delay/2);
+				sleep(catch_up_delay/2);
 				break;
 
-			case COUNT_ONE:
-				reading = test[n];
-				//sleep(catch_up_delay/2); 
-				//reading = singalReading();
+			case COUNT_ONE:				
+				sleep(catch_up_delay/2); 
+				reading = singalReading();
 				if(reading == 1 || reading == 0) // assume the zero reading is an error
 				{
 					++count_one_count;
@@ -197,12 +173,11 @@ int main()
 						mystate = COUNT_ONE;
 					}
 				}
-				//sleep(catch_up_delay/2);
+				sleep(catch_up_delay/2);
 				break;
 
 
 			case COUNT_DONE:
-				--n;
 				data[i] = temp;
 				++i;
 				if(i > 7)
@@ -220,9 +195,8 @@ int main()
 				break;
 
 			case COUNT_TRANSITION:
-				//sleep(catch_up_delay/2);
-				reading = test[n];
-				//reading = singalReading();
+				sleep(catch_up_delay/2);	
+				reading = singalReading();
 				if(reading == 0)
 				{
 					++count_zero_count;
@@ -233,30 +207,26 @@ int main()
 					++count_one_count;
 					mystate = COUNT_ONE;
 				}
-				//sleep(catch_up_delay/2);
+				sleep(catch_up_delay/2);
 				break;
 
 			case ERROR_CHECK:
-				//sleep(catch_up_delay/2);
-				--n;
+				sleep(catch_up_delay/2);
 				i = 0;
 				new_char_one_count = 0;
 				new_char_zero_count = 0;
 
 				char_output = convertToChar(data);
-				int out = convertToAsciiNum(data);
-
-				cout << char_output << " " << out<< endl;
+				cout << char_output;
 
 				delete[] data;
 				data = nullptr;
 				data = new(std::nothrow) int[data_length]; // clear data array
 
   				mystate = START; // treat next sequence as a new start to reset
-				//sleep(catch_up_delay/2);
+				sleep(catch_up_delay/2);
 				break;
 		}
-		++n;
 	}
 	
 	return error_output;
