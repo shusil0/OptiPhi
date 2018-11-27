@@ -101,7 +101,12 @@ bool isValid(char str){
 int* convertToBinaryArray(char str){
     int input = (int) str;
     int lengthOfArray = CHARACTER_LENGTH;
-    int* binaryArray =  new int[lengthOfArray];
+    int* binaryArray =  new(std::nothrow) int[lengthOfArray];
+    if(binaryArray == NULL){
+        cout<<"Array too big"<<endl;
+        return new int[0];
+    }
+
     
     for(int i = lengthOfArray-2; i >= 0; i--){
         binaryArray[i] = input % 2;

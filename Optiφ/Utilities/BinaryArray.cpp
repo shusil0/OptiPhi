@@ -8,7 +8,7 @@ using namespace std;
 
 
 int inValidEntry = -1; //In that is to be returned if an invalid entry is accessed
-BinaryArray BinaryArray::inValidBinaryArray(new int[0], -1); //Invald data array, returned when functions that return a data array fail
+BinaryArray BinaryArray::inValidBinaryArray(new int[1], -1); //Invald data array, returned when functions that return a data array fail
 BinaryArray BinaryArray::newCharArray(NEW_CHAR_SEQUENCE, NEW_CHAR_SEQUENCE_LENGTH); //Invald data array, returned when functions that return a data array fail
 
 //Returns length of data array

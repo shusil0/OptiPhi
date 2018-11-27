@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <time.h>
 #include <iostream>     // std::cout
-#include <new>          // std::nothrow
 #include "../Utilities/BinaryArray.cpp"
 #include "../Utilities/GPIO++.c"
 
@@ -14,17 +13,24 @@ using namespace std;
 const int OUTPUT_PIN = 4;
 
 int main(const int argc, const char *const argv[]) {
-
+ cout<<"0"<<endl;
   GPIO_Handle gpio;
+  cout<<"1"<<endl;
 	gpio = gpiolib_init_gpio();
+  cout<<"2"<<endl;
   setAsOutput(gpio, OUTPUT_PIN);
   BinaryArray outputArray;
   outputArray += outputArray.newCharArray;
+  cout<<"3"<<endl;
   for (int k = 1; k < argc; k++) {
     cout << "****" << endl;
     const char * str = argv[k];
     int i = 0;
-    int * currentChar = new int[8];
+    int* currentChar = new(std::nothrow) int[CHARACTER_LENGTH];
+    if(currentChar == nullptr){
+      cout<<"Current Char Too Big"<<endl;
+    }
+  
 
     while (str[i]) {
 
