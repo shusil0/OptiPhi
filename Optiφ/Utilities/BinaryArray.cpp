@@ -3,6 +3,7 @@
 #include <math.h>
 #include "BinaryArray.h"
 
+
 using namespace std;
 
 
@@ -89,7 +90,9 @@ Output: none
 
 */
 void BinaryArray::operator = (const BinaryArray & arr) {
+    
     _data = new(std::nothrow) int[arr._length]; 
+    
     if(_data == NULL){
         _length = -1;
         return;
@@ -134,6 +137,10 @@ BinaryArray::BinaryArray(const BinaryArray &arr) {
 }
 BinaryArray::BinaryArray(const int* data,const int length) {
     _length = length;
+    if(length < 0){
+      _data = new int[0];
+      return;
+    }
     _data = new(std::nothrow) int[length]; 
     for(int i = 0; i < length; i++){
         _data[i] = !!data[i];
