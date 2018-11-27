@@ -54,7 +54,7 @@ int main(const int argc, const char *const argv[]) {
   cout<<"Starting to Send"<<endl;
   turnOff(gpio, OUTPUT_PIN);
   for(int i = 0; i < outputArray.getLength(); i++){
-    int currentVal = outputArray.getData[i];
+    int currentVal = outputArray.getData()[i];
     if(currentVal){
       turnOn(gpio, OUTPUT_PIN);
       sleep(DELAY_MICRO);

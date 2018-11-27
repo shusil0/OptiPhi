@@ -3,6 +3,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <cmath>
+#include <chrono>
+#include <thread>
 
 
 const int NEW_CHAR_SEQUENCE_LENGTH = 6;
