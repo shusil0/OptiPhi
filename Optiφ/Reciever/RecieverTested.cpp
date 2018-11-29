@@ -67,9 +67,9 @@ int main()
 		switch(mystate)
 		{
 			case START:
-				sleep(catch_up_delay/2); // wait for 500ms so the reviever system is in sync with sender system
-										   // assuming singals are coming at 1000ms intervals				
-				reading = singalReading(gpio); // test signal values for 750ms
+				sleep(catch_up_delay/2); // wait for x/2 micrsosecods so the reviever system is in sync with sender system
+										   // assuming signals are coming at x microsecond intervals				
+				reading = singalReading(gpio); // test signal values
 				if(reading == 0)
 				{
 					mystate = NEW_CHAR_ZERO;
@@ -103,7 +103,7 @@ int main()
 						mystate = NEW_CHAR_ZERO; // assume hyteresis
 					}
 				}
-				sleep(catch_up_delay/2);
+				sleep(catch_up_delay/2); // wait for x/2 microseconds again
 				break;
 
 			case NEW_CHAR_ONE:				 
