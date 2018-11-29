@@ -10,7 +10,7 @@
 // const BinaryArray OFF;
 
 using namespace std;
-const int OUTPUT_PIN = 17;
+
 
 int main(const int argc, const char *const argv[]) {
   GPIO_Handle gpio;
@@ -26,8 +26,6 @@ int main(const int argc, const char *const argv[]) {
     if(currentChar == nullptr){
       cout<<"Current Char Too Big"<<endl;
     }
-  
-
     while (str[i]) {
 
       for (int j = 0; j < 8; j++) {
@@ -37,10 +35,7 @@ int main(const int argc, const char *const argv[]) {
       for (int j = 0; j < CHARACTER_LENGTH; j++) {
         outputArray += currentChar[j];
       }
-      if (str[i + 1] != 0) {
-        outputArray += outputArray.newCharArray;
-      }
-
+      outputArray += outputArray.newCharArray;
       i++;
     }
     if (k != argc - 1) {
@@ -48,8 +43,16 @@ int main(const int argc, const char *const argv[]) {
       for (int j = 0; j < CHARACTER_LENGTH; j++) {
         outputArray += currentChar[j];
       }
-
+      outputArray += outputArray.newCharArray;
     }
+    if (k == argc-1){
+        currentChar = convertToBinaryArray('\n');
+        for (int j = 0; j < CHARACTER_LENGTH; j++) {
+          outputArray += currentChar[j];
+        }
+    }
+
+
   }
 
   cout << outputArray << endl;
@@ -70,4 +73,31 @@ int main(const int argc, const char *const argv[]) {
     //sleep(DELAY_MICRO);
   }
 
+}
+
+void append(char x){
+  int length = 1;
+  static char* chars = new char[length];
+  if(x == '/n'){
+    for(int i = 0; i  < length; i++){
+      cout<<chars[i]<<flush;
+    }
+    cout<<x<<flush;
+    return;
+  }
+  else{
+    char* temp = new char[length];
+    for(int i = 0; i < length; i++){
+      temp[i] = chars[i];
+    }
+    delete[] chars;
+    chars = new char[length + 1];
+    for(int i = 0; i < length; i++){
+      chars[i] = temp[i];
+    }
+    chars[length] = x;
+    length++;
+
+  }
+  
 }

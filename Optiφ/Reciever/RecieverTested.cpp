@@ -47,7 +47,7 @@ int main()
 
 	int* data = new(std::nothrow) int[data_length]; // array to store the characters in binary
 													// also stores error check associated with each character
-	char char_output; // stores character to be writen to file
+	char char_output; // stores character to  writen to file
 	
 	State mystate = START;
 	int i = 0;
@@ -66,6 +66,7 @@ int main()
 
 	while(error_output == 0)
 	{
+		cout<<reading<<", "<<mystate<<endl;
 		switch(mystate)
 		{
 			case START:
@@ -249,8 +250,9 @@ int main()
   				mystate = START; // treat next sequence as a new start to reset
 				sleep(catch_up_delay/2);
 				break;
+		
 		}
-		cout<<""<<flush;
+		cout<<reading<<", "<<mystate<<endl;
 	}
 	
 	return error_output;

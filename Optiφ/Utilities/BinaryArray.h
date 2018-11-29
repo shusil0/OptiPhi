@@ -13,6 +13,8 @@ public:
   int getLength();
   int* getData();
   void addNewChar();
+  int numOnes();
+  int numZeros();
 
   // Operators
   int&          operator()   (int index) const;
