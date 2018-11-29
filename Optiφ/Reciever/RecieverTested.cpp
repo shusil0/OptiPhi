@@ -7,6 +7,7 @@
 #include <thread>
 #include "../Utilities/Utilities.cpp"
 #include "../Utilities/GPIO++.c"
+#include "../Utilities/configLog.cpp"
 using namespace std;
 
 const int INPUT_PIN = 4;
@@ -22,6 +23,18 @@ int singalReading(uint32_t* gpio)
 int main()
 {
 
+	FILE* logFile;
+	logFile = fopen("Log.log", "a");
+
+	if(!doesFileExist(logFile)){
+		logFile = fopen("Log.log", "w");
+		fclose(logFile);
+		logFile = fopen("Log.log", "a");
+	}
+
+	if(!doesFileExist(logFile)){
+		cout<<"LOG FILE IS  MISSING"<<endl;
+	}
 	GPIO_Handle gpio;
 	gpio = gpiolib_init_gpio();
 	if(gpio == NULL){
@@ -225,6 +238,9 @@ int main()
 					++new_char_one_count;
 				}
 				cout << char_output;
+				char time[30];
+				getTime(time);
+				printMsg(logFile, time, char_output, "\n \n");
 
 				delete[] data;
 				data = nullptr;

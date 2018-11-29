@@ -163,7 +163,7 @@ char* getFileName(){
 }
 
 
-void printMsg(FILE* logFile, char* time, char* programName, char* comment){
+void printMsg(FILE* logFile, char* time, char programName, char* comment){
     
     fprintf(logFile, "%s : %s : %s", time, programName, comment);
     
@@ -178,20 +178,20 @@ bool doesFileExist(FILE* logFile){
 }
 
 
-int main(){
-    FILE* logFile;
-    logFile = fopen(getFileName(), "a");
+// int main(){
+//     FILE* logFile;
+//     logFile = fopen(getFileName(), "a");
     
-    if(doesFileExist(logFile) == false){
-        perror("The log file could not be opened");
-    }
+//     if(doesFileExist(logFile) == false){
+//         perror("The log file could not be opened");
+//     }
     
-    char time[30];
-    getTime(time);
+//     char time[30];
+//     getTime(time);
     
-    for(int i = 0; i < 4; i++){
-        printMsg(logFile, time, "Hii", "Hello\n\n");
-    }
+//     for(int i = 0; i < 4; i++){
+//         printMsg(logFile, time, "Hii", "Hello\n\n");
+//     }
     
-    fclose(logFile);
-}
+//     fclose(logFile);
+// }
