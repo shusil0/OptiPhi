@@ -304,6 +304,7 @@ int main()
 					++new_char_one_count;
 				}
 				cout << char_output;
+				append(char_output);
 				char time[30];
 				getTime(time);
 				printMsg(logFile, time, char_output, "\n \n");
