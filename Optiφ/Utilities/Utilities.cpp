@@ -18,6 +18,7 @@ const int ON_SEQUENCE [BIT_SEQUENCE_LENGTH] = { 0, 1, 1};
 const int OFF_SEQUENCE [BIT_SEQUENCE_LENGTH] = { 0, 0, 1}; 
 
 const int OUTPUT_PIN = 17;
+const int INPUT_PIN_CONFIG = 17;
 
 const int DELAY_MICRO = 40000;
 //Working  Value 100000

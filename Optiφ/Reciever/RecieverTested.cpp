@@ -6,9 +6,11 @@
 #include "../Utilities/Utilities.cpp"
 #include "../Utilities/GPIO++.c"
 #include "../Utilities/configLog.cpp"
+#include "../Utilities/newConfig.cpp"
+#include "../Utilities/BinaryArray.cpp"
 using namespace std;
 
-const int INPUT_PIN = 4;
+const int INPUT_PIN;
 
 enum State { START, NEW_CHAR_ZERO, NEW_CHAR_ONE, COUNT_ZERO, COUNT_ONE, COUNT_DONE, COUNT_TRANSITION, ERROR_CHECK};
 
@@ -58,9 +60,47 @@ int main()
 
 	int catch_up_delay = DELAY_MICRO;
 
-	int new_char_zero_termination = 2;
-	int new_char_one_termination = 3;
+	int new_char_zero_termination = 0;
+	int new_char_one_termination = 0;
 
+	int* new_char_array = {0};
+	int length = 0;
+
+	readConfigFile(0, catch_up_delay, 0, INPUT_PIN, new_char_array, length); // reading from config to adjust variables
+	
+	BinaryArray binaryArray = BinaryArray(new_char_array, length);
+
+	if(catch_up_delay == -99) // -99 is error case, so data is read from another file and set to a default state
+	{
+		catch_up_delay = DELAY_MICRO;
+	}
+	else if(INPUT_PIN == -99)
+	{
+		INPUT_PIN = INPUT_PIN_CONFIG;
+	}
+	else if (binaryArray.isValid() == false)
+	{
+		new_char_zero_termination = 0;
+		new_char_one_termination = 0;
+
+		for(int i = 0; i < NEW_CHAR_SEQUENCE_LENGTH; i++)
+		{
+			if(NEW_CHAR_SEQUENCE[i] == 0)
+			{
+				++new_char_zero_termination;
+			}
+			else
+			{
+				++new_char_one_termination;
+			}
+		}
+	}
+	else if(binaryArray.isValid() == true)
+	{
+		new_char_zero_termination = binaryArray.numZeros();
+		new_char_one_termination = binaryArray.numOnes();
+
+	}
 
 	while(error_output == 0)
 	{
