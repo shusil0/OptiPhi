@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
-#include <chrono>
-#include <thread>
 #include "../Utilities/Utilities.cpp"
 #include "../Utilities/GPIO++.c"
 using namespace std;
