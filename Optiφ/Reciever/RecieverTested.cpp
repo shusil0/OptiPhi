@@ -3,10 +3,13 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
+#include <fcntl.h>
+#include <linux/watchdog.h>
 #include "../Utilities/Utilities.cpp"
 #include "../Utilities/GPIO++.c"
-#include "../Utilities/newConfig.cpp"
+#include "../ReadWriteFiles/newConfig.cpp"
 #include "../Utilities/BinaryArray.cpp"
+
 using namespace std;
 
 const int INPUT_PIN;
@@ -24,6 +27,12 @@ int main()
 
 	FILE* logFile;
 	logFile = fopen("Log.log", "a");
+	int watchdog;
+
+	if ((watchdog = open("/dev/watchdog", O_RDWR | O_NOCTTY)) < 0) {
+		printf("Error: Couldn't open watchdog device! %d\n", watchdog);
+		return -1;
+	} 
 
 	if(!doesFileExist(logFile)){
 		logFile = fopen("Log.log", "w");
@@ -67,7 +76,7 @@ int main()
 	int* new_char_array = {0};
 	int length = 0;
 
-	readConfigFile(watchdogTime, catch_up_delay, 0, INPUT_PIN, new_char_array, length); // reading from config to adjust variables
+	readConfigFile(&watchdogTime, &catch_up_delay, &0, &INPUT_PIN, &new_char_array, &length); // reading from config to adjust variables
 	if (watchdogTime < 0 || watchdogTime > 15){
 		//Log invalid time
 		watchdogTime = WATCHDOG_TIME;
@@ -106,16 +115,22 @@ int main()
 		new_char_one_termination = binaryArray.numOnes();
 
 	}
+	ioctl(watchdog, WDIOC_SETTIMEOUT, &watchdogTime);
+	ioctl(watchdog, WDIOC_GETTIMEOUT, &timeout);
+
+	//This print statement will confirm to us if the time limit has been properly
+	//changed. The \n will create a newline character similar to what endl does.
+	printf("The watchdog timeout is %d seconds.\n\n", timeout);
 
 	while(error_output == 0)
 	{
-		cout<<reading<<", "<<mystate<<endl;
+		// //cout<<reading<<", "<<mystate<<endl;
 
-		if (timer.getElapsedTime() >= sf::seconds((float)watchdogTime)) {
-			//writeToLogFile
-			timer.restart();
-		}
-
+		// if (timer.getElapsedTime() >= sf::seconds((float)watchdogTime)) {
+		// 	//writeToLogFile
+		// 	timer.restart();
+		// }
+		ioctl(watchdog, WDIOC_KEEPALIVE, 0);
 
 		switch(mystate)
 		{
