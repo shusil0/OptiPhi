@@ -129,6 +129,9 @@ int write(char* msg){
 }
 
 
+//------------------------------------------------------------------------------------------------------
+// This writes to the log file and writes the time
+//------------------------------------------------------------------------------------------------------
 int write(){
     
     Config cfgRead;
@@ -227,7 +230,11 @@ void append(char val){
     
 }
 
-int readConfigFile(float &watchDog, int &delay, int &pin1, int &pin2, int* arr, int &length){
+
+//------------------------------------------------------------------------------------------------------
+// This reads the config file
+//------------------------------------------------------------------------------------------------------
+int readConfigFile(int &watchDog, int &delay, int &pin1, int &pin2, int* arr, int &length){
     
     Config cfg;
     try{
