@@ -24,6 +24,14 @@ int* BinaryArray::getData(){
 bool BinaryArray::isValid(){
     return _length > 0;
 }
+int BinaryArray::numOnes(){
+    int sum = 0;
+    for(int i = 0; i < _length; i++){
+      if(_data[i])
+        sum++;
+    }
+    return sum;
+}
 
 
 /*
