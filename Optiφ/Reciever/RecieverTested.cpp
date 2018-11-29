@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include "../Utilities/Utilities.cpp"
 #include "../Utilities/GPIO++.c"
-#include "../Utilities/configLog.cpp"
 #include "../Utilities/newConfig.cpp"
 #include "../Utilities/BinaryArray.cpp"
 using namespace std;
@@ -58,6 +57,8 @@ int main()
 	int count_zero_count = 0; // count for number of zero singals in the COUNT state
 	int count_one_count = 0; // count for number of one singals in the COUNT state
 
+	int watchdogTime = 0;
+
 	int catch_up_delay = DELAY_MICRO;
 
 	int new_char_zero_termination = 0;
@@ -66,19 +67,23 @@ int main()
 	int* new_char_array = {0};
 	int length = 0;
 
-	readConfigFile(0, catch_up_delay, 0, INPUT_PIN, new_char_array, length); // reading from config to adjust variables
-	
+	readConfigFile(watchdogTime, catch_up_delay, 0, INPUT_PIN, new_char_array, length); // reading from config to adjust variables
+	if (watchdogTime < 0 || watchdogTime > 15){
+		//Log invalid time
+		watchdogTime = WATCHDOG_TIME;
+	}
 	BinaryArray binaryArray = BinaryArray(new_char_array, length);
+
 
 	if(catch_up_delay == -99) // -99 is error case, so data is read from another file and set to a default state
 	{
 		catch_up_delay = DELAY_MICRO;
 	}
-	else if(INPUT_PIN == -99)
+	if(INPUT_PIN < 0)
 	{
 		INPUT_PIN = INPUT_PIN_CONFIG;
 	}
-	else if (binaryArray.isValid() == false)
+	if (binaryArray.isValid() == false)
 	{
 		new_char_zero_termination = 0;
 		new_char_one_termination = 0;
@@ -95,7 +100,7 @@ int main()
 			}
 		}
 	}
-	else if(binaryArray.isValid() == true)
+	if(binaryArray.isValid() == true)
 	{
 		new_char_zero_termination = binaryArray.numZeros();
 		new_char_one_termination = binaryArray.numOnes();
@@ -105,6 +110,13 @@ int main()
 	while(error_output == 0)
 	{
 		cout<<reading<<", "<<mystate<<endl;
+
+		if (timer.getElapsedTime() >= sf::seconds((float)watchdogTime)) {
+			//writeToLogFile
+			timer.restart();
+		}
+
+
 		switch(mystate)
 		{
 			case START:

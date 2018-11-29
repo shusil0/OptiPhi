@@ -21,6 +21,8 @@ const int OUTPUT_PIN = 17;
 const int INPUT_PIN_CONFIG = 17;
 
 const int DELAY_MICRO = 40000;
+
+const int WATCHDOG_TIME = 10;
 //Working  Value 100000
 //50000
 

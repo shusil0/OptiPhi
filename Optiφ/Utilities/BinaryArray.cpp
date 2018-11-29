@@ -32,6 +32,14 @@ int BinaryArray::numOnes(){
     }
     return sum;
 }
+int BinaryArray::numOnes(){
+    int sum = 0;
+    for(int i = 0; i < _length; i++){
+      if(!_data[i])
+        sum++;
+    }
+    return sum;
+}
 
 
 /*
