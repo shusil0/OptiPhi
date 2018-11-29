@@ -7,8 +7,8 @@
 #include <thread>
 
 
-const int NEW_CHAR_SEQUENCE_LENGTH = 6;
-const int NEW_CHAR_SEQUENCE [NEW_CHAR_SEQUENCE_LENGTH] = { 0, 0, 0, 1, 1, 1}; 
+const int NEW_CHAR_SEQUENCE_LENGTH = 5;
+const int NEW_CHAR_SEQUENCE [NEW_CHAR_SEQUENCE_LENGTH] = { 0, 0, 1, 1, 1}; 
 
 const int CHARACTER_LENGTH = 8;
 
@@ -17,7 +17,9 @@ const int BIT_SEQUENCE_LENGTH = 3;
 const int ON_SEQUENCE [BIT_SEQUENCE_LENGTH] = { 0, 1, 1}; 
 const int OFF_SEQUENCE [BIT_SEQUENCE_LENGTH] = { 0, 0, 1}; 
 
-const int DELAY_MICRO = 1000;
+const int DELAY_MICRO = 40000;
+//Working  Value 100000
+//50000
 
 using namespace std;
 
@@ -71,6 +73,7 @@ int convertToAsciiNum(int data[]){
         return asciiNum/2;
         
     }else{
+
         return -1;
     }
     return 0;
@@ -79,9 +82,12 @@ int convertToAsciiNum(int data[]){
 char convertToChar(int data[]){
     int asciiNum = convertToAsciiNum(data);
     // Check what if asciiNum is less than 0, this means invalid
-    char ascii = asciiNum;
+    if(asciiNum < 0){
+        return '#';
+    }
+    char ascii = (char)asciiNum;
     
-    cout << "ascii " << ascii << endl;
+    //cout << ascii << endl;
     return ascii;
     
 }

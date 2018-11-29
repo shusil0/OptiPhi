@@ -5,26 +5,43 @@
 #include <stdio.h>
 #include "../Utilities/Utilities.cpp"
 #include "../Utilities/GPIO++.c"
+#include "../Utilities/configLog.cpp"
 using namespace std;
 
-const int INPUT_PIN = 17;
+const int INPUT_PIN = 4;
 
 enum State { START, NEW_CHAR_ZERO, NEW_CHAR_ONE, COUNT_ZERO, COUNT_ONE, COUNT_DONE, COUNT_TRANSITION, ERROR_CHECK};
 
 int singalReading(uint32_t* gpio)
 {
-	return getPinState(gpio, INPUT_PIN);
+	return (bool)getPinState(gpio, INPUT_PIN);
 }
 
 //int test [90] = {0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 1};
 int main()
 {
 
+	FILE* logFile;
+	logFile = fopen("Log.log", "a");
+
+	if(!doesFileExist(logFile)){
+		logFile = fopen("Log.log", "w");
+		fclose(logFile);
+		logFile = fopen("Log.log", "a");
+	}
+
+	if(!doesFileExist(logFile)){
+		cout<<"LOG FILE IS  MISSING"<<endl;
+	}
 	GPIO_Handle gpio;
 	gpio = gpiolib_init_gpio();
+	if(gpio == NULL){
+		cout<<"We done MESSED up"<<endl;
+	}
 	setAsInput(gpio, INPUT_PIN);
 	int error_output = 0;
 	int data_length = 8;
+
 
 	int* data = new(std::nothrow) int[data_length]; // array to store the characters in binary
 													// also stores error check associated with each character
@@ -41,7 +58,7 @@ int main()
 
 	int catch_up_delay = DELAY_MICRO;
 
-	int new_char_zero_termination = 3;
+	int new_char_zero_termination = 2;
 	int new_char_one_termination = 3;
 
 
@@ -211,7 +228,17 @@ int main()
 				new_char_zero_count = 0;
 
 				char_output = convertToChar(data);
+				reading = singalReading(gpio);
+				if(reading == 0){
+					++new_char_zero_count;
+				}
+				else{
+					++new_char_one_count;
+				}
 				cout << char_output;
+				char time[30];
+				getTime(time);
+				printMsg(logFile, time, char_output, "\n \n");
 
 				delete[] data;
 				data = nullptr;
@@ -221,6 +248,7 @@ int main()
 				sleep(catch_up_delay/2);
 				break;
 		}
+		cout<<""<<flush;
 	}
 	
 	return error_output;
