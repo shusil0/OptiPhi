@@ -293,7 +293,7 @@ int main()
 				new_char_one_count = 0;
 				new_char_zero_count = 0;
 
-				char_output = convertToChar(data);
+				char_output = convertToChar(data); // convert binary array to char
 				reading = singalReading(gpio);
 				if(reading == 0){
 					++new_char_zero_count;
@@ -301,7 +301,7 @@ int main()
 				else{
 					++new_char_one_count;
 				}
-				cout << char_output;
+				cout << char_output; // cout char
 				append(char_output);
 				char time[30];
 				getTime(time);
