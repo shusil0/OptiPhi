@@ -54,12 +54,18 @@ int main(const int argc, const char *const argv[]) {
 
 
   }
+  sendBits(outputArray, gpio);
 
   cout << outputArray << endl;
+
+
+}
+
+void sendBits(BinaryArray dataToSend, uint32_t* gpio){
   cout<<"Starting to Send"<<endl;
   turnOff(gpio, OUTPUT_PIN);
-  for(int i = 0; i < outputArray.getLength(); i++){
-    int currentVal = outputArray.getData()[i];
+  for(int i = 0; i < dataToSend.getLength(); i++){
+    int currentVal = dataToSend.getData()[i];
     if(currentVal){
       turnOn(gpio, OUTPUT_PIN);
       sleep(DELAY_MICRO);
@@ -72,32 +78,4 @@ int main(const int argc, const char *const argv[]) {
     }
     //sleep(DELAY_MICRO);
   }
-
-}
-
-void append(char x){
-  int length = 1;
-  static char* chars = new char[length];
-  if(x == '/n'){
-    for(int i = 0; i  < length; i++){
-      cout<<chars[i]<<flush;
-    }
-    cout<<x<<flush;
-    return;
-  }
-  else{
-    char* temp = new char[length];
-    for(int i = 0; i < length; i++){
-      temp[i] = chars[i];
-    }
-    delete[] chars;
-    chars = new char[length + 1];
-    for(int i = 0; i < length; i++){
-      chars[i] = temp[i];
-    }
-    chars[length] = x;
-    length++;
-
-  }
-  
 }
