@@ -4,11 +4,10 @@
 #include <math.h>
 #include <stdio.h>
 #include <fcntl.h>
-#include <linux/watchdog.h>
 #include "../Utilities/Utilities.cpp"
 #include "../Utilities/GPIO++.c"
-#include "../ReadWriteFiles/newConfig.cpp"
 #include "../Utilities/BinaryArray.cpp"
+#include "ReadWrite.cpp"
 
 using namespace std;
 
@@ -25,24 +24,24 @@ int singalReading(uint32_t* gpio)
 int main()
 {
 
-	FILE* logFile;
-	logFile = fopen("Log.log", "a");
-	int watchdog;
+	// FILE* logFile;
+	// logFile = fopen("Log.log", "a");
+	// int watchdog;
 
-	if ((watchdog = open("/dev/watchdog", O_RDWR | O_NOCTTY)) < 0) {
-		printf("Error: Couldn't open watchdog device! %d\n", watchdog);
-		return -1;
-	} 
+	// if ((watchdog = open("/dev/watchdog", O_RDWR | O_NOCTTY)) < 0) {
+	// 	printf("Error: Couldn't open watchdog device! %d\n", watchdog);
+	// 	return -1;
+	// } 
 
-	if(!doesFileExist(logFile)){
-		logFile = fopen("Log.log", "w");
-		fclose(logFile);
-		logFile = fopen("Log.log", "a");
-	}
+	// if(!doesFileExist(logFile)){
+	// 	logFile = fopen("Log.log", "w");
+	// 	fclose(logFile);
+	// 	logFile = fopen("Log.log", "a");
+	// }
 
-	if(!doesFileExist(logFile)){
-		cout<<"LOG FILE IS  MISSING"<<endl;
-	}
+	// if(!doesFileExist(logFile)){
+	// 	cout<<"LOG FILE IS  MISSING"<<endl;
+	// }
 	GPIO_Handle gpio;
 	gpio = gpiolib_init_gpio();
 	if(gpio == NULL){
@@ -115,12 +114,11 @@ int main()
 		new_char_one_termination = binaryArray.numOnes();
 
 	}
-	ioctl(watchdog, WDIOC_SETTIMEOUT, &watchdogTime);
-	ioctl(watchdog, WDIOC_GETTIMEOUT, &timeout);
+
 
 	//This print statement will confirm to us if the time limit has been properly
 	//changed. The \n will create a newline character similar to what endl does.
-	printf("The watchdog timeout is %d seconds.\n\n", timeout);
+	//printf("The watchdog timeout is %d seconds.\n\n", timeout);
 
 	while(error_output == 0)
 	{
@@ -130,7 +128,7 @@ int main()
 		// 	//writeToLogFile
 		// 	timer.restart();
 		// }
-		ioctl(watchdog, WDIOC_KEEPALIVE, 0);
+		
 
 		switch(mystate)
 		{

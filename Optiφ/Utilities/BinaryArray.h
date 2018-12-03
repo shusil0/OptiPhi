@@ -7,11 +7,10 @@ public:
 
   static BinaryArray inValidBinaryArray;
   static BinaryArray newCharArray;
-    // Methods
-
+  // Methods
   bool isValid();
   int getLength();
-  int* getData();
+  //int* getData();
   void addNewChar();
   int numOnes();
   int numZeros();
@@ -42,6 +41,7 @@ private:
     int _length;
     int* _data;
     friend std::ostream& operator<<(std::ostream& os, const BinaryArray& m);
+
     
 
 };

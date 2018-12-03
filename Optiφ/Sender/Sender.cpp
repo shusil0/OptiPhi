@@ -5,17 +5,32 @@
 #include <iostream>     // std::cout
 #include "../Utilities/BinaryArray.cpp"
 #include "../Utilities/GPIO++.c"
+#include "ReadWrite.cpp"
 
 // const BinaryArray ON;
 // const BinaryArray OFF;
 
 using namespace std;
 
+void sendBits(BinaryArray dataToSend, uint32_t* gpio);
 
 int main(const int argc, const char *const argv[]) {
+  int unneccecaryVariable = 0;
+  int delay = 0;
+  int outputPin = 0;
+  int length = 0;
+  int* newArray = new int[5];
+
+  readConfigFile(unneccecaryVariable, delay, outputPin, unneccecaryVariable, newArray, unneccecaryVariable);
+  cout<< "Output " << outputPin<<endl;
+  cout<< "Delay: " << delay<<endl;
+
+    
+
   GPIO_Handle gpio;
 	gpio = gpiolib_init_gpio();
-  setAsOutput(gpio, OUTPUT_PIN);
+  setAsOutput(gpio, outputPin);
+  DELAY_MICRO = delay;
   BinaryArray outputArray;
   outputArray += outputArray.newCharArray;
   for (int k = 1; k < argc; k++) {
@@ -54,9 +69,10 @@ int main(const int argc, const char *const argv[]) {
 
 
   }
+  cout << outputArray << endl;
   sendBits(outputArray, gpio);
 
-  cout << outputArray << endl;
+  
 
 
 }
@@ -65,7 +81,11 @@ void sendBits(BinaryArray dataToSend, uint32_t* gpio){
   cout<<"Starting to Send"<<endl;
   turnOff(gpio, OUTPUT_PIN);
   for(int i = 0; i < dataToSend.getLength(); i++){
-    int currentVal = dataToSend.getData()[i];
+    int currentVal = dataToSend(i);
+    if(currentVal != !!currentVal){//Makes sure that element in binary array is valid
+      cerr<<"Invalid Data in array found at index: " << i <<endl;
+      return;
+    }
     if(currentVal){
       turnOn(gpio, OUTPUT_PIN);
       sleep(DELAY_MICRO);

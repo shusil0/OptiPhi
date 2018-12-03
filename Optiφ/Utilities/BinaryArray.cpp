@@ -9,6 +9,7 @@ using namespace std;
 
 
 int inValidEntry = -1; //In that is to be returned if an invalid entry is accessed
+int& inValidEntryRef = inValidEntry;
 BinaryArray BinaryArray::inValidBinaryArray(new int[1], -1); //Invald data array, returned when functions that return a data array fail
 BinaryArray BinaryArray::newCharArray(NEW_CHAR_SEQUENCE, NEW_CHAR_SEQUENCE_LENGTH); //Invald data array, returned when functions that return a data array fail
 
@@ -17,9 +18,9 @@ int BinaryArray::getLength(){
     return _length;
 }
 //Returns a pointer to the data array, this means multiple objects will point to the same array, this is expected and normal
-int* BinaryArray::getData(){
-    return _data;
-}
+// int* BinaryArray::getData(){
+//     return _data;
+// }
 //Checks to see if array is valid
 bool BinaryArray::isValid(){
     return _length > 0;
@@ -32,7 +33,7 @@ int BinaryArray::numOnes(){
     }
     return sum;
 }
-int BinaryArray::numOnes(){
+int BinaryArray::numZeros(){
     int sum = 0;
     for(int i = 0; i < _length; i++){
       if(!_data[i])
@@ -52,9 +53,10 @@ Output:
 *-1 if the requested element is out of range
 
 */
-int & BinaryArray::operator()(int index) const {
+int &BinaryArray::operator()(int index) const {
+  const int x = -1;
   if (index >= _length || index < 0) {
-    return inValidEntry;
+    return inValidEntryRef;
   }
   return _data[index];
 }
