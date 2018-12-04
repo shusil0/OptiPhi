@@ -1,0 +1,10 @@
+[Unit]
+Description = Service to Automatically run the Receivers Code
+After  = multi-users.target
+
+[Service]
+Type = idle
+ExecStart = /home/pi/OptiPhi/Optiφ/Receiver/Receiver
+
+[Install]
+WantedBy=multi-users.target
